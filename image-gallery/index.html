@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Gallery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Image Gallery</h1>
+    <p>Click any picture to open it. Use the arrow keys to move between pictures.</p>
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">All</button>
+      <button class="filter" data-filter="nature">Nature</button>
+      <button class="filter" data-filter="city">City</button>
+      <button class="filter" data-filter="abstract">Abstract</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="gallery" id="gallery">
+      <figure tabindex="0" role="button" class="item" data-category="nature">
+        <img src="images/nature-1.jpg" alt="Sunset Peaks" loading="lazy">
+        <figcaption>Sunset Peaks</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="nature">
+        <img src="images/nature-2.jpg" alt="Mountain Lake" loading="lazy">
+        <figcaption>Mountain Lake</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="nature">
+        <img src="images/nature-3.jpg" alt="Starry Night" loading="lazy">
+        <figcaption>Starry Night</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="nature">
+        <img src="images/nature-4.jpg" alt="Pine Forest" loading="lazy">
+        <figcaption>Pine Forest</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="city">
+        <img src="images/city-1.jpg" alt="Midnight City" loading="lazy">
+        <figcaption>Midnight City</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="city">
+        <img src="images/city-2.jpg" alt="Golden Skyline" loading="lazy">
+        <figcaption>Golden Skyline</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="city">
+        <img src="images/city-3.jpg" alt="Blue Hour" loading="lazy">
+        <figcaption>Blue Hour</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="city">
+        <img src="images/city-4.jpg" alt="Morning Haze" loading="lazy">
+        <figcaption>Morning Haze</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="abstract">
+        <img src="images/abstract-1.jpg" alt="Colour Circles" loading="lazy">
+        <figcaption>Colour Circles</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="abstract">
+        <img src="images/abstract-2.jpg" alt="Ripple" loading="lazy">
+        <figcaption>Ripple</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="abstract">
+        <img src="images/abstract-3.jpg" alt="Geometric Tiles" loading="lazy">
+        <figcaption>Geometric Tiles</figcaption>
+      </figure>
+      <figure tabindex="0" role="button" class="item" data-category="abstract">
+        <img src="images/abstract-4.jpg" alt="Soft Waves" loading="lazy">
+        <figcaption>Soft Waves</figcaption>
+      </figure>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lb-btn lb-close" id="lbClose" aria-label="Close">&times;</button>
+    <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous picture">&#10094;</button>
+    <figure class="lb-content">
+      <img id="lbImg" src="" alt="">
+      <figcaption id="lbCaption"></figcaption>
+    </figure>
+    <button class="lb-btn lb-next" id="lbNext" aria-label="Next picture">&#10095;</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
