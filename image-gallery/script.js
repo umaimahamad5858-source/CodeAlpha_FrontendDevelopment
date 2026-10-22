@@ -1,135 +1,214 @@
-:root {
-  --bg: #f1f3f7;
-  --ink: #1d2433;
-  --muted: #5d6a85;
-  --brand: #3d5afe;
+const filterButtons = document.querySelectorAll(".filter");
+const items = Array.from(document.querySelectorAll(".item"));
+
+const lightbox = document.getElementById("lightbox");
+const lbImg = document.getElementById("lbImg");
+const lbCaption = document.getElementById("lbCaption");
+const lbClose = document.getElementById("lbClose");
+const lbPrev = document.getElementById("lbPrev");
+const lbNext = document.getElementById("lbNext");
+
+let visibleItems = [...items];
+let currentIndex = 0;
+let touchStartX = 0;
+
+// -----------------------------
+// FILTER IMAGES
+// -----------------------------
+function updateVisibleItems(category) {
+    items.forEach((item) => {
+        const itemCategory = item.dataset.category;
+
+        if (category === "all" || itemCategory === category) {
+            item.classList.remove("hide");
+        } else {
+            item.classList.add("hide");
+        }
+    });
+
+    visibleItems = items.filter(
+        (item) => !item.classList.contains("hide")
+    );
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+// Filter button click
+filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        filterButtons.forEach((btn) => {
+            btn.classList.remove("active");
+        });
 
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: "Segoe UI", system-ui, sans-serif;
-  line-height: 1.5;
-}
+        button.classList.add("active");
 
-.top { text-align: center; padding: 40px 16px 24px; }
-.top h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); }
-.top p { color: var(--muted); margin: 8px 0 22px; }
+        const category = button.dataset.filter;
+        updateVisibleItems(category);
 
-.filters { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
-.filter {
-  border: 2px solid var(--brand);
-  background: transparent;
-  color: var(--brand);
-  padding: 8px 20px;
-  border-radius: 999px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.25s, color 0.25s;
-}
-.filter:hover, .filter.active { background: var(--brand); color: #fff; }
-.filter:focus-visible { outline: 3px solid #ffb300; outline-offset: 2px; }
-.item:focus-visible { outline: 3px solid #ffb300; outline-offset: 3px; }
+        // Close lightbox if no images are visible
+        if (visibleItems.length === 0) {
+            closeLightbox();
+        }
+    });
+});
 
-.gallery {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 16px 48px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 18px;
-}
+// -----------------------------
+// SHOW IMAGE IN LIGHTBOX
+// -----------------------------
+function showImage(index) {
+    if (visibleItems.length === 0) {
+        return;
+    }
 
-.item {
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  aspect-ratio: 4 / 3;
-  cursor: pointer;
-  background: #dde2ec;
-  box-shadow: 0 4px 14px rgba(29, 36, 51, 0.15);
-  animation: fadeIn 0.45s ease;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
-.item figcaption {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 28px 14px 12px;
-  color: #fff;
-  font-weight: 600;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-.item:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(29, 36, 51, 0.25); }
-.item:hover img { transform: scale(1.08); }
-.item:hover figcaption { transform: translateY(0); }
-.item.hide { display: none; }
+    currentIndex =
+        (index + visibleItems.length) % visibleItems.length;
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+    const image = visibleItems[currentIndex].querySelector("img");
+
+    if (!image) {
+        return;
+    }
+
+    lbImg.src = image.src;
+    lbImg.alt = image.alt;
+
+    lbCaption.textContent =
+        `${image.alt} (${currentIndex + 1} / ${visibleItems.length})`;
 }
 
-/* ---------- Lightbox ---------- */
-.lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: rgba(10, 14, 24, 0.94);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-.lightbox.open { opacity: 1; visibility: visible; }
+// -----------------------------
+// OPEN LIGHTBOX
+// -----------------------------
+function openLightbox(item) {
+    const index = visibleItems.indexOf(item);
 
-.lb-content { max-width: 86vw; text-align: center; }
-.lb-content img {
-  max-width: 100%;
-  max-height: 78vh;
-  border-radius: 10px;
-  display: block;
-  margin: 0 auto;
-}
-.lb-content figcaption { color: #fff; margin-top: 12px; font-size: 1.05rem; }
+    if (index === -1) {
+        return;
+    }
 
-.lb-btn {
-  position: absolute;
-  border: none;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 1.3rem;
-  transition: background 0.2s;
-}
-.lb-btn:hover { background: rgba(255, 255, 255, 0.3); }
-.lb-btn:focus-visible { outline: 3px solid #ffb300; }
-.lb-close { top: 18px; right: 18px; font-size: 2rem; line-height: 1; }
-.lb-prev { left: 16px; top: 50%; transform: translateY(-50%); }
-.lb-next { right: 16px; top: 50%; transform: translateY(-50%); }
+    currentIndex = index;
 
-@media (max-width: 600px) {
-  .gallery { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px 10px 36px; }
-  .lb-btn { width: 40px; height: 40px; }
-  .lb-prev { left: 6px; }
-  .lb-next { right: 6px; }
+    showImage(currentIndex);
+
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+// -----------------------------
+// CLOSE LIGHTBOX
+// -----------------------------
+function closeLightbox() {
+    lightbox.classList.remove("open");
+    lightbox.setAttribute("aria-hidden", "true");
+
+    document.body.style.overflow = "";
 }
+
+// -----------------------------
+// IMAGE CLICK
+// -----------------------------
+items.forEach((item) => {
+
+    item.addEventListener("click", () => {
+        openLightbox(item);
+    });
+
+    // Keyboard support
+    item.addEventListener("keydown", (event) => {
+
+        if (event.key === "Enter" || event.key === " ") {
+
+            event.preventDefault();
+
+            openLightbox(item);
+        }
+    });
+
+});
+
+// -----------------------------
+// NEXT BUTTON
+// -----------------------------
+lbNext.addEventListener("click", () => {
+    showImage(currentIndex + 1);
+});
+
+// -----------------------------
+// PREVIOUS BUTTON
+// -----------------------------
+lbPrev.addEventListener("click", () => {
+    showImage(currentIndex - 1);
+});
+
+// -----------------------------
+// CLOSE BUTTON
+// -----------------------------
+lbClose.addEventListener("click", () => {
+    closeLightbox();
+});
+
+// -----------------------------
+// CLICK OUTSIDE IMAGE TO CLOSE
+// -----------------------------
+lightbox.addEventListener("click", (event) => {
+
+    if (event.target === lightbox) {
+        closeLightbox();
+    }
+
+});
+
+// -----------------------------
+// KEYBOARD CONTROLS
+// -----------------------------
+document.addEventListener("keydown", (event) => {
+
+    if (!lightbox.classList.contains("open")) {
+        return;
+    }
+
+    if (event.key === "ArrowRight") {
+        showImage(currentIndex + 1);
+    }
+
+    if (event.key === "ArrowLeft") {
+        showImage(currentIndex - 1);
+    }
+
+    if (event.key === "Escape") {
+        closeLightbox();
+    }
+
+});
+
+// -----------------------------
+// TOUCH / SWIPE SUPPORT
+// -----------------------------
+lightbox.addEventListener(
+    "touchstart",
+    (event) => {
+        touchStartX = event.changedTouches[0].clientX;
+    },
+    { passive: true }
+);
+
+lightbox.addEventListener(
+    "touchend",
+    (event) => {
+
+        const touchEndX = event.changedTouches[0].clientX;
+
+        const difference = touchEndX - touchStartX;
+
+        if (Math.abs(difference) > 50) {
+
+            if (difference < 0) {
+                showImage(currentIndex + 1);
+            } else {
+                showImage(currentIndex - 1);
+            }
+
+        }
+    },
+    { passive: true }
+);
